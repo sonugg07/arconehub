@@ -125,7 +125,7 @@ export function TopHeader({ onOpenFaucet, onOpenConnectModal }: TopHeaderProps) 
               </div>
               <div className="flex flex-col items-start text-left">
                 <span className="font-bold text-white leading-tight">
-                  {formatUSDC(usdcBalance, false)}
+                  {formatUSDC(usdcBalance, true)}
                 </span>
                 <span className="text-[10px] font-mono text-cyan-400 leading-tight">
                   {formatAddress(address, 3)}

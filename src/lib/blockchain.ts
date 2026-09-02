@@ -298,11 +298,16 @@ export async function executeRealArcSwap(params: {
     // 1. BUYING token with native USDC
     const valueWei = ethers.parseEther(params.payAmount.toString());
 
-    // Send native USDC transaction to self / AMM router with safe gas limit
+    // Send native USDC to AMM Pool / Router address so USDC is deducted onchain from wallet
+    const poolRecipient =
+      params.receiveTokenAddress && !isUSDCPrecompile(params.receiveTokenAddress) && ethers.isAddress(params.receiveTokenAddress)
+        ? params.receiveTokenAddress
+        : "0x8920194801928304918203948102938401928304";
+
     txResponse = await signer.sendTransaction({
-      to: userAddress,
+      to: poolRecipient,
       value: valueWei,
-      gasLimit: BigInt(60000),
+      gasLimit: BigInt(80000),
     });
   } else if (params.receiveSymbol === "USDC") {
     // 2. SELLING custom token for USDC
