@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { generateTxHash } from "@/lib/utils";
 
 export type ActivityCategory = "all" | "payments" | "swaps" | "tokens" | "jobs" | "escrow";
@@ -41,6 +41,8 @@ interface ActivityContextType {
   filteredActivities: ActivityItem[];
   exportCSV: () => void;
 }
+
+const ACTIVITIES_STORAGE_KEY = "arcone_activities_ledger_v1";
 
 const INITIAL_ACTIVITIES: ActivityItem[] = [
   {
@@ -90,6 +92,31 @@ const INITIAL_ACTIVITIES: ActivityItem[] = [
   },
 ];
 
+function getStoredActivities(): ActivityItem[] {
+  if (typeof window === "undefined") return INITIAL_ACTIVITIES;
+  try {
+    const raw = localStorage.getItem(ACTIVITIES_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.error("Error reading stored activities:", err);
+  }
+  return INITIAL_ACTIVITIES;
+}
+
+function saveStoredActivities(activities: ActivityItem[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(activities));
+  } catch (err) {
+    console.error("Error saving activities to storage:", err);
+  }
+}
+
 const ActivityContext = createContext<ActivityContextType | undefined>(undefined);
 
 export function ActivityProvider({ children }: { children: React.ReactNode }) {
@@ -98,16 +125,31 @@ export function ActivityProvider({ children }: { children: React.ReactNode }) {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  // Load persistent activities on mount
+  useEffect(() => {
+    const stored = getStoredActivities();
+    setActivities(stored);
+  }, []);
+
   const addActivity = (item: AddActivityInput) => {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const dateStr = now.toLocaleDateString([], { month: "short", day: "numeric" });
+
     const newActivity: ActivityItem = {
       ...item,
-      id: `tx-${Date.now()}`,
+      id: `tx-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       txHash: item.txHash || generateTxHash(),
-      blockNumber: item.blockNumber || 59969223,
-      timestamp: item.timestamp || "Just now",
+      blockNumber: item.blockNumber || Math.floor(60000000 + Math.random() * 50000),
+      timestamp: item.timestamp || `Today at ${timeStr} (${dateStr})`,
       fee: item.fee || "0.0009 USDC",
     };
-    setActivities((prev) => [newActivity, ...prev]);
+
+    setActivities((prev) => {
+      const updated = [newActivity, ...prev];
+      saveStoredActivities(updated);
+      return updated;
+    });
   };
 
   const filteredActivities = activities.filter((act) => {
