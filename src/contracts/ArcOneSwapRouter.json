@@ -1,0 +1,59 @@
+{
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "usdcIn",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "arcxOut",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "SwapExecuted",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "minArcxOut",
+          "type": "uint256"
+        }
+      ],
+      "name": "swapUSDCForARCX",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ],
+  "bytecode": "6080604052348015600e575f5ffd5b506101d38061001c5f395ff3fe608060405260043610610020575f3560e01c8063cab505e31461002b575f5ffd5b3661002757005b5f5ffd5b61003e61003936600461013e565b610050565b60405190815260200160405180910390f35b5f5f34116100985760405162461bcd60e51b815260206004820152601060248201526f16915493d7d554d110d7d05353d5539560821b60448201526064015b60405180910390fd5b5f60646100a6346073610155565b6100b0919061017e565b9050828110156100f65760405162461bcd60e51b815260206004820152601160248201527014d31254141051d157d15610d151511151607a1b604482015260640161008f565b60408051348152602081018390524281830152905133917fe3a277e9dc82afe4d40533f81d7299e0d9ca6d4ed93e2bbe5d94a93eaf0a5b5f919081900360600190a292915050565b5f6020828403121561014e575f5ffd5b5035919050565b808202811582820484141761017857634e487b7160e01b5f52601160045260245ffd5b92915050565b5f8261019857634e487b7160e01b5f52601260045260245ffd5b50049056fea26469706673582212207960ed8b27b2f00d1990f847214e8efb459e3d884bb08c25e435fd5c0794aca664736f6c63430008240033"
+}
