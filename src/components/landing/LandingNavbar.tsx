@@ -29,13 +29,13 @@ export function LandingNavbar({ onOpenConnectModal }: LandingNavbarProps) {
     else openConnectModal();
   };
 
-  const navLinks = [
+  const navLinks: { label: string; href: string; external?: boolean }[] = [
+    { label: "Launch App", href: "/launch-app" },
     { label: "Features", href: "#features" },
     { label: "How It Works", href: "#how-it-works" },
     { label: "Jobs", href: "#jobs" },
-    { label: "Launch", href: "#launch" },
+    { label: "Launchpad", href: "#launch" },
     { label: "Arc Ecosystem", href: "#ecosystem" },
-    { label: "Docs", href: "https://docs.arcone.hub", external: true },
   ];
 
   return (
