@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 export interface AppNotification {
   id: string;
@@ -24,74 +24,84 @@ interface NotificationContextType {
   clearAll: () => void;
 }
 
-const INITIAL_NOTIFICATIONS: AppNotification[] = [
-  {
-    id: "notif-1",
-    title: "Payment Received",
-    message: "You received 450.00 USDC from 0x82f...391a for Smart Contract Audit Milestone #1.",
-    type: "success",
-    timestamp: "10 mins ago",
-    read: false,
-    txHash: "0x39a1b92040...a991f",
-  },
-  {
-    id: "notif-2",
-    title: "Escrow Funded",
-    message: "Aura Capital deposited 3,000.00 USDC into Escrow for 'Fullstack Web3 UI Lead'.",
-    type: "info",
-    timestamp: "45 mins ago",
-    read: false,
-    txHash: "0x17b3c489...e304",
-  },
-  {
-    id: "notif-3",
-    title: "Token Deployed Successfully",
-    message: "Your token $NOVA was deployed to Arc Testnet at 0x889...a42.",
-    type: "success",
-    timestamp: "2 hours ago",
-    read: true,
-    txHash: "0x8890cf23...a421",
-  },
-  {
-    id: "notif-4",
-    title: "Arc Testnet Gas Update",
-    message: "Network gas fees optimized to 0.0008 USDC per tx. EVM finality: 390ms.",
-    type: "info",
-    timestamp: "5 hours ago",
-    read: true,
-  },
-];
+const NOTIFICATIONS_STORAGE_KEY = "arcone_notifications_v2";
+
+function getStoredNotifications(): AppNotification[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.error("Error reading stored notifications:", err);
+  }
+  return [];
+}
+
+function saveStoredNotifications(notifs: AppNotification[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(notifs));
+  } catch (err) {
+    console.error("Error saving notifications:", err);
+  }
+}
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
-  const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+
+  // Load persistent real notifications on client mount
+  useEffect(() => {
+    const stored = getStoredNotifications();
+    setNotifications(stored);
+  }, []);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const addNotification = (notif: Omit<AppNotification, "id" | "timestamp" | "read">) => {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
     const newNotif: AppNotification = {
       ...notif,
-      id: `notif-${Date.now()}`,
-      timestamp: "Just now",
+      id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      timestamp: `Today at ${timeStr}`,
       read: false,
     };
-    setNotifications((prev) => [newNotif, ...prev]);
+
+    setNotifications((prev) => {
+      const updated = [newNotif, ...prev];
+      saveStoredNotifications(updated);
+      return updated;
+    });
   };
 
   const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+    setNotifications((prev) => {
+      const updated = prev.map((n) => (n.id === id ? { ...n, read: true } : n));
+      saveStoredNotifications(updated);
+      return updated;
+    });
   };
 
   const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    setNotifications((prev) => {
+      const updated = prev.map((n) => ({ ...n, read: true }));
+      saveStoredNotifications(updated);
+      return updated;
+    });
   };
 
   const clearAll = () => {
     setNotifications([]);
+    saveStoredNotifications([]);
   };
 
   return (
