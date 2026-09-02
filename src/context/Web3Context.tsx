@@ -69,11 +69,13 @@ export interface Web3ContextType {
   disconnectWallet: () => void;
   switchNetwork: () => Promise<boolean>;
   openFaucet: () => void;
+  closeFaucet: () => void;
 
   // Modals & UI Controls
   isConnectModalOpen: boolean;
   openConnectModal: () => void;
   closeConnectModal: () => void;
+  isFaucetModalOpen: boolean;
 
   // Real Onchain Transaction Execution & State Machine
   txStatus: TransactionStatus;
@@ -123,6 +125,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
   // Modals & Transactions
   const [isConnectModalOpen, setIsConnectModalOpen] = useState<boolean>(false);
+  const [isFaucetModalOpen, setIsFaucetModalOpen] = useState<boolean>(false);
   const [txStatus, setTxStatus] = useState<TransactionStatus>("IDLE");
   const [activeTx, setActiveTx] = useState<Web3ContextType["activeTx"]>(null);
   const [pendingSignature, setPendingSignature] = useState<PendingSignatureRequest | null>(null);
@@ -308,7 +311,11 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   };
 
   const openFaucet = () => {
-    window.open(arcTestnet.faucetUrl, "_blank", "noopener,noreferrer");
+    setIsFaucetModalOpen(true);
+  };
+
+  const closeFaucet = () => {
+    setIsFaucetModalOpen(false);
   };
 
   // Transaction Signature Request Popup
@@ -508,6 +515,8 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         disconnectWallet,
         switchNetwork,
         openFaucet,
+        closeFaucet,
+        isFaucetModalOpen,
         isConnectModalOpen,
         openConnectModal,
         closeConnectModal,

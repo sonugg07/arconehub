@@ -14,8 +14,7 @@ import { WalletSignModal } from "@/components/modals/WalletSignModal";
 import { WrongNetworkBanner } from "@/components/common/WrongNetworkBanner";
 
 function GlobalModalsContainer() {
-  const { isConnectModalOpen, closeConnectModal, openFaucet } = useWeb3();
-  const [faucetOpen, setFaucetOpen] = useState(false);
+  const { isConnectModalOpen, closeConnectModal, isFaucetModalOpen, closeFaucet, openFaucet } = useWeb3();
   const [cmdOpen, setCmdOpen] = useState(false);
 
   useEffect(() => {
@@ -36,7 +35,7 @@ function GlobalModalsContainer() {
       <WalletSignModal />
       <NotificationDrawer />
       <ConnectWalletModal isOpen={isConnectModalOpen} onClose={closeConnectModal} />
-      <FaucetModal isOpen={faucetOpen} onClose={() => setFaucetOpen(false)} />
+      <FaucetModal isOpen={isFaucetModalOpen} onClose={closeFaucet} />
       <CommandPalette
         isOpen={cmdOpen}
         onClose={() => setCmdOpen(false)}

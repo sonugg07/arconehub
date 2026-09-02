@@ -50,8 +50,8 @@ export default function DashboardHome() {
 
   const quickActions = [
     { label: "Pay", href: "/app/pay", icon: Send, color: "from-blue-600 to-cyan-500", desc: "Send & Request USDC", status: "LIVE" },
-    { label: "Swap", href: "/app/swap", icon: ArrowLeftRight, color: "from-purple-600 to-indigo-600", desc: "DEX AMM Pools", status: "SOON" },
-    { label: "Launch", href: "/app/launch", icon: Rocket, color: "from-fuchsia-600 to-pink-600", desc: "Token Factory", status: "SOON" },
+    { label: "Swap", href: "/app/swap", icon: ArrowLeftRight, color: "from-purple-600 to-indigo-600", desc: "DEX AMM Pools", status: "LIVE" },
+    { label: "Launch", href: "/app/launch", icon: Rocket, color: "from-fuchsia-600 to-pink-600", desc: "Token Factory", status: "LIVE" },
     { label: "Jobs", href: "/app/jobs", icon: Briefcase, color: "from-emerald-600 to-teal-500", desc: "Escrow Work & Bounties", status: "LIVE" },
   ];
 

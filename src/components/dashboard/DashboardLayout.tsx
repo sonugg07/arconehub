@@ -1,19 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Sidebar } from "./Sidebar";
 import { TopHeader } from "./TopHeader";
 import { MobileNav } from "./MobileNav";
-import { FaucetModal } from "@/components/modals/FaucetModal";
-import { ConnectWalletModal } from "@/components/modals/ConnectWalletModal";
+import { useWeb3 } from "@/context/Web3Context";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [faucetOpen, setFaucetOpen] = useState(false);
-  const [connectOpen, setConnectOpen] = useState(false);
+  const { openFaucet, openConnectModal } = useWeb3();
 
   return (
     <div className="flex min-h-screen bg-[#050713] text-white">
@@ -23,8 +21,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 pb-24 lg:pb-12">
         <TopHeader
-          onOpenFaucet={() => setFaucetOpen(true)}
-          onOpenConnectModal={() => setConnectOpen(true)}
+          onOpenFaucet={openFaucet}
+          onOpenConnectModal={openConnectModal}
         />
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto animate-in fade-in duration-200">
           {children}
@@ -33,10 +31,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Mobile Bottom Navigation */}
       <MobileNav />
-
-      {/* Modals */}
-      <FaucetModal isOpen={faucetOpen} onClose={() => setFaucetOpen(false)} />
-      <ConnectWalletModal isOpen={connectOpen} onClose={() => setConnectOpen(false)} />
     </div>
   );
 }

@@ -132,17 +132,20 @@ export function FaucetModal({ isOpen, onClose, initialAsset = "USDC" }: FaucetMo
         )}
 
         {/* Action Button */}
-        <button
+        <a
+          href="https://faucet.circle.com/"
+          target="_blank"
+          rel="noopener noreferrer"
           onClick={() => {
-            openFaucet();
+            handleCopy();
             onClose();
           }}
-          className="glass-button w-full py-4 rounded-2xl text-xs font-bold text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-blue cursor-pointer"
+          className="glass-button w-full py-4 rounded-2xl text-xs font-bold text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-blue cursor-pointer text-center"
         >
           <Sparkles className="w-4 h-4 text-cyan-200" />
           <span>Claim ${selectedAsset} on Circle Faucet</span>
           <ExternalLink className="w-3.5 h-3.5" />
-        </button>
+        </a>
 
         {/* Footer */}
         <div className="flex items-center justify-center gap-2 text-[11px] text-slate-400">
