@@ -12,6 +12,7 @@ import {
   verifyArcTransaction,
   estimateArcGasFee,
 } from "@/lib/blockchain";
+import { getLocalUSDCDelta } from "@/lib/userBalances";
 
 export type TransactionStatus =
   | "IDLE"
@@ -143,7 +144,8 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     setIsBalanceLoading(true);
     try {
       const realBal = await getRealUSDCBalance(address);
-      setUsdcBalance(realBal);
+      const delta = getLocalUSDCDelta(address);
+      setUsdcBalance(Math.max(0, realBal + delta));
     } catch (err) {
       console.error("Failed to refresh balance:", err);
     } finally {

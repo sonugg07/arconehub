@@ -2,6 +2,32 @@ import { getRealUSDCBalance } from "./blockchain";
 import { DeployedToken } from "./tokenRegistry";
 
 const USER_BALANCES_KEY_PREFIX = "arcone_user_token_balances_v2_";
+const USER_USDC_DELTA_KEY_PREFIX = "arcone_user_usdc_delta_v1_";
+
+export function getLocalUSDCDelta(address?: string | null): number {
+  if (typeof window === "undefined" || !address) return 0;
+  try {
+    const raw = localStorage.getItem(`${USER_USDC_DELTA_KEY_PREFIX}${address.toLowerCase()}`);
+    if (raw) {
+      const val = parseFloat(raw);
+      return isNaN(val) ? 0 : val;
+    }
+  } catch (err) {
+    console.error("Error reading local USDC delta:", err);
+  }
+  return 0;
+}
+
+export function addLocalUSDCDelta(address: string, deltaAmount: number): void {
+  if (typeof window === "undefined" || !address) return;
+  try {
+    const current = getLocalUSDCDelta(address);
+    const updated = Math.max(0, current + deltaAmount);
+    localStorage.setItem(`${USER_USDC_DELTA_KEY_PREFIX}${address.toLowerCase()}`, updated.toString());
+  } catch (err) {
+    console.error("Error saving local USDC delta:", err);
+  }
+}
 
 export function getLocalTokenBalances(address?: string | null): Record<string, number> {
   if (typeof window === "undefined" || !address) return {};
@@ -37,8 +63,10 @@ export async function fetchAccurateTokenBalance(
 
   // 1. USDC is the native gas token on Arc Testnet
   if (token.symbol.toUpperCase() === "USDC") {
-    if (realUsdcBalance !== undefined) return realUsdcBalance;
-    return await getRealUSDCBalance(address);
+    const delta = getLocalUSDCDelta(address);
+    if (realUsdcBalance !== undefined) return Math.max(0, realUsdcBalance);
+    const onchain = await getRealUSDCBalance(address);
+    return Math.max(0, onchain + delta);
   }
 
   // 2. Swapped token balance in user's personal wallet
@@ -49,6 +77,5 @@ export async function fetchAccurateTokenBalance(
   }
 
   // 3. Newly deployed tokens start with 0 in user's personal wallet
-  // (The total supply is locked in the AMM Liquidity Pool for trading)
   return 0;
 }

@@ -10,7 +10,7 @@ import { useActivity } from "@/context/ActivityContext";
 import { arcTestnet, getExplorerTxUrl } from "@/config/network";
 import { executeRealArcSwap } from "@/lib/blockchain";
 import { getStoredTokens, DeployedToken } from "@/lib/tokenRegistry";
-import { fetchAccurateTokenBalance, saveLocalTokenBalance, getLocalTokenBalances } from "@/lib/userBalances";
+import { fetchAccurateTokenBalance, saveLocalTokenBalance, getLocalTokenBalances, addLocalUSDCDelta } from "@/lib/userBalances";
 import { formatNumber, formatUSDC, formatAddress } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import {
@@ -210,11 +210,21 @@ function SwapPageContent() {
       });
 
       // Update local accurate balances
-      if (payToken.symbol !== "USDC") {
+      if (payToken.symbol === "USDC") {
+        // Bought custom token with USDC
+        if (receiveToken.symbol !== "USDC") {
+          const newRecBal = receiveTokenBalance + result.receivedAmount;
+          saveLocalTokenBalance(address, receiveToken.symbol, newRecBal);
+        }
+      } else if (receiveToken.symbol === "USDC") {
+        // Sold custom token for USDC -> decrease token balance, credit received USDC!
         const newPayBal = Math.max(0, payTokenBalance - parsedPay);
         saveLocalTokenBalance(address, payToken.symbol, newPayBal);
-      }
-      if (receiveToken.symbol !== "USDC") {
+        addLocalUSDCDelta(address, result.receivedAmount);
+      } else {
+        // Custom token -> Custom token
+        const newPayBal = Math.max(0, payTokenBalance - parsedPay);
+        saveLocalTokenBalance(address, payToken.symbol, newPayBal);
         const newRecBal = receiveTokenBalance + result.receivedAmount;
         saveLocalTokenBalance(address, receiveToken.symbol, newRecBal);
       }
