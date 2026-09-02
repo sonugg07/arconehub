@@ -11,7 +11,7 @@ export interface DeployedToken {
   color?: string;
 }
 
-const STORAGE_KEY = "arcone_deployed_tokens_v1";
+const STORAGE_KEY = "arcone_deployed_tokens_v2";
 
 export const DEFAULT_TOKENS: DeployedToken[] = [
   {
@@ -23,6 +23,26 @@ export const DEFAULT_TOKENS: DeployedToken[] = [
     priceUSDC: 1.0,
     createdAt: "2026-01-01T00:00:00Z",
     color: "#0066ff",
+  },
+  {
+    address: "0x1A20194801928304918203948102938401928301",
+    name: "Euro Coin (Circle)",
+    symbol: "EURC",
+    decimals: 6,
+    totalSupply: 50000000,
+    priceUSDC: 1.085, // 1 EURC ≈ 1.085 USDC
+    createdAt: "2026-01-05T00:00:00Z",
+    color: "#0052FF",
+  },
+  {
+    address: "0x2B30194801928304918203948102938401928302",
+    name: "Circle Wrapped Bitcoin",
+    symbol: "cirBTC",
+    decimals: 8,
+    totalSupply: 21000000,
+    priceUSDC: 64850.0, // 1 cirBTC ≈ 64,850 USDC
+    createdAt: "2026-01-10T00:00:00Z",
+    color: "#F7931A",
   },
   {
     address: "0x8920194801928304918203948102938401928304",
@@ -55,7 +75,17 @@ export function getStoredTokens(): DeployedToken[] {
       return DEFAULT_TOKENS;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : DEFAULT_TOKENS;
+    if (Array.isArray(parsed)) {
+      // Ensure all official default tokens exist in the list
+      const combined = [...parsed];
+      for (const def of DEFAULT_TOKENS) {
+        if (!combined.some((t) => t.symbol.toUpperCase() === def.symbol.toUpperCase())) {
+          combined.push(def);
+        }
+      }
+      return combined;
+    }
+    return DEFAULT_TOKENS;
   } catch {
     return DEFAULT_TOKENS;
   }
