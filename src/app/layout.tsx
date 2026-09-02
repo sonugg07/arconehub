@@ -3,6 +3,7 @@ import "./globals.css";
 import { AppProviders } from "@/components/providers/AppProviders";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://arcone.hub"),
   title: "ArcOne Hub — One Hub. Everything Onchain.",
   description: "A unified onchain super-app for payments, DEX swaps, token launches, and Web3 jobs — powered by Arc & native USDC.",
   icons: {
