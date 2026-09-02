@@ -60,6 +60,9 @@ contract StandardERC20 {
         emit Transfer(from, to, value);
         return true;
     }
+
+    receive() external payable {}
+    fallback() external payable {}
 }
 
 /**

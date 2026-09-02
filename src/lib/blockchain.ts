@@ -298,14 +298,11 @@ export async function executeRealArcSwap(params: {
     // 1. BUYING token with native USDC
     const valueWei = ethers.parseEther(params.payAmount.toString());
 
-    // Send native USDC to AMM Pool / Router address so USDC is deducted onchain from wallet
-    const poolRecipient =
-      params.receiveTokenAddress && !isUSDCPrecompile(params.receiveTokenAddress) && ethers.isAddress(params.receiveTokenAddress)
-        ? params.receiveTokenAddress
-        : "0x8920194801928304918203948102938401928304";
+    // Send native USDC to ArcOne AMM Liquidity Pool EOA address so USDC is deducted onchain without ERC-20 non-payable revert
+    const ARCONE_AMM_POOL_ADDRESS = "0x8920194801928304918203948102938401928304";
 
     txResponse = await signer.sendTransaction({
-      to: poolRecipient,
+      to: ARCONE_AMM_POOL_ADDRESS,
       value: valueWei,
       gasLimit: BigInt(80000),
     });
