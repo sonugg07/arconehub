@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { ArcOneLogo } from "@/components/brand/ArcOneLogo";
 import { useWeb3 } from "@/context/Web3Context";
 import { formatAddress } from "@/lib/utils";
+import { getExplorerAddressUrl } from "@/config/network";
 import {
   LayoutDashboard,
   Send,
@@ -128,10 +129,10 @@ export function Sidebar() {
                   <Copy className="w-3.5 h-3.5" />
                 </button>
                 <a
-                  href={`https://explorer.testnet.arc.network/address/${address}`}
+                  href={getExplorerAddressUrl(address || "")}
                   target="_blank"
                   rel="noreferrer"
-                  title="View on explorer"
+                  title="View on ArcScan Explorer"
                   className="p-1 rounded-lg hover:bg-white/[0.08] text-slate-400 hover:text-white transition-colors"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />

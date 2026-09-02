@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useActivity, ActivityCategory, ActivityItem } from "@/context/ActivityContext";
 import { formatAddress, formatUSDC } from "@/lib/utils";
+import { getExplorerTxUrl } from "@/config/network";
 import {
   Activity,
   Search,
@@ -238,12 +239,12 @@ export default function ActivityPage() {
                   Close
                 </button>
                 <a
-                  href={`https://explorer.testnet.arc.network/tx/${selectedTx.txHash}`}
+                  href={getExplorerTxUrl(selectedTx.txHash)}
                   target="_blank"
                   rel="noreferrer"
                   className="flex-1 glass-button py-3 rounded-xl text-xs font-bold text-white uppercase text-center flex items-center justify-center gap-1.5"
                 >
-                  <span>View Explorer</span>
+                  <span>View on ArcScan</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
